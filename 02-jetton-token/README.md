@@ -19,14 +19,19 @@
 
 ### Deploy
 
-`npx blueprint run StorageAndFind-deploy --testnet`
+`npx blueprint run jetton.deploy --testnet --mnemonic`
 
 
-### Request contract to set new value
+### Mint token
 
-`npx blueprint run StorageAndFind-changeValue --testnet`
+`npx blueprint run jetton.mint --testnet  --mnemonic`
 
 
-### Query vlaue from contract
+### Transfer token
 
-`npx blueprint run StorageAndFind-getValue --testnet`
+`npx blueprint run jetton.transfer --testnet  --mnemonic`
+
+
+### Query token
+
+`npx blueprint run jetton.query --testnet  --mnemonic`
