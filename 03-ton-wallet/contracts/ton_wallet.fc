@@ -1,0 +1,74 @@
+#include "imports/stdlib.fc";
+#include "imports/params.fc";
+#include "imports/op-codes.fc";
+
+
+(int, slice) load_data() inline {
+  slice ds = get_data().begin_parse();
+  return (
+      ds~load_uint(32), ;; contract id
+      ds~load_msg_addr() ;; admin_address
+  );
+}
+
+() save_data(int contract_id, slice admin_address) impure inline {
+  set_data(begin_cell()
+            .store_uint(contract_id,32)
+            .store_slice(admin_address)
+           .end_cell()
+          );
+}
+
+() recv_internal(int my_balance,int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    if (in_msg_body.slice_empty?()) { ;; ignore empty messages
+        return ();
+    }
+    slice cs = in_msg_full.begin_parse();
+    int flags = cs~load_uint(4);
+
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
+    slice sender_address = cs~load_msg_addr();
+  
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
+
+    (int contract_id, slice admin_address) = load_data();
+
+    if (op == op::deposit) {
+        return ();
+    }
+    if (op == op::withdraw) {
+        throw_unless(73, equal_slices(sender_address, admin_address));
+        int withdraw_amount = in_msg_body~load_coins();
+        throw_unless(74, withdraw_amount > 0);
+        throw_unless(75, my_balance >= withdraw_amount);
+
+        var msg = begin_cell()
+          .store_uint(0x10, 6) ;; we should not bounce here cause receiver can have uninitialized contract
+          .store_slice(sender_address)
+          .store_coins(withdraw_amount)
+          .store_uint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1);
+
+        send_raw_message(msg.end_cell(), 1);
+            return ();
+    }
+
+    throw(0xffff);
+}
+
+int get_contract_balance() method_id {
+   [int balance, cell p2] =  get_balance();
+    return balance;
+}
+
+slice get_admin_address() method_id {
+    (int contract_id, slice admin_address) = load_data();
+    return admin_address;
+}
+
+int get_contract_id() method_id {
+    (int contract_id, slice admin_address) = load_data();
+    return contract_id;
+}

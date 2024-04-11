@@ -1,0 +1,2 @@
+const op::deposit = "op::deposit"c;
+const op::withdraw = "op::withdraw"c;
