@@ -40,12 +40,14 @@ export class JettonWallet implements Contract {
         forward_ton_amount: bigint,
         query_id: number | bigint = 0,
     ) {
+        const response_destination = from; //The excess ton will go to this address, preferably at the sender's discretion
+
         const body = beginCell()
             .storeUint(Op.transfer, 32) // jetton 转账操作码
             .storeUint(query_id, 64) // query_id:uint64
             .storeCoins(jetton_amount) // amount:(VarUInteger 16) -  转账的 Jetton 金额（小数位 = 6 - jUSDT, 9 - 默认）
             .storeAddress(to) // destination:MsgAddress
-            .storeAddress(from) // response_destination:MsgAddress
+            .storeAddress(response_destination) // response_destination:MsgAddress
             .storeUint(0, 1) // custom_payload:(Maybe ^Cell)
             .storeCoins(forward_ton_amount) // forward_ton_amount:(VarUInteger 16)
             .storeUint(0, 1) // forward_payload:(Either Cell ^Cell)

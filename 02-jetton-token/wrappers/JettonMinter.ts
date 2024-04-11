@@ -61,11 +61,12 @@ export class JettonMinter implements Contract {
 
     }
     static mintMessage(from: Address, to: Address, jetton_amount: bigint, forward_ton_amount: bigint, total_ton_amount: bigint, query_id: number | bigint = 0) {
-		const mintMsg = beginCell().storeUint(Op.internal_transfer, 32)
+		const response_destination = from;  //The excess ton will go to this address, preferably at the sender's discretion
+        const mintMsg = beginCell().storeUint(Op.internal_transfer, 32)
                                    .storeUint(0, 64)
                                    .storeCoins(jetton_amount)
                                    .storeAddress(null)
-                                   .storeAddress(from) // Response addr
+                                   .storeAddress(response_destination) // Response addr
                                    .storeCoins(forward_ton_amount)
                                    .storeMaybeRef(null)
                     .endCell();
