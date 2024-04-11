@@ -1,2 +1,3 @@
 /01-getAndSet/.env
 /02-jetton-token/*.env
+/03-ton-wallet/*.env
