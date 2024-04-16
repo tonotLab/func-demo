@@ -9,7 +9,7 @@ let blockchain: Blockchain;
 let deployer: SandboxContract<TreasuryContract>;
 let tonWallet: SandboxContract<TonWallet>;
 
-describe('JettonMinter', () => {
+describe('TonWallet', () => {
     beforeAll(async () => {
         blockchain = await Blockchain.create();
         deployer = await blockchain.treasury('deployer');
@@ -19,10 +19,12 @@ describe('JettonMinter', () => {
 
     beforeEach(async () => {
         //初始化合约
+        const contractId = Math.floor(Math.random() * 1000);
+        console.log(`contractId:${contractId}`);
         tonWallet = blockchain.openContract(
             TonWallet.createFromConfig(
                 {
-                    contractId: Math.floor(Math.random() * 1000),
+                    contractId: contractId,
                     adminAddress: deployer.address,
                 },
                 wallet_code,
@@ -39,14 +41,15 @@ describe('JettonMinter', () => {
             success: true,
         });
 
-        console.log(`tonWalletAddress:${tonWallet.address}`);
+        let queryContractId = await tonWallet.getContractId();
+        let contractAdmin = await tonWallet.getAdminAddress();
+        console.log(`tonWalletAddress:${tonWallet.address} queryContractId:${queryContractId} admin:${contractAdmin}`);
     });
 
-    it('deposit test', async () => {
+    it('deposit and withdraw test', async () => {
         const sender = deployer.getSender();
-        const deposit_amount = toNano('0.1');
+        const deposit_amount = toNano('0.5');
         const txRsp = await tonWallet.sendDeposit(sender, deposit_amount);
-
         expect(txRsp.transactions).toHaveTransaction({
             from: deployer.address,
             to: tonWallet.address,
@@ -56,5 +59,18 @@ describe('JettonMinter', () => {
         //query balance
         let contractBalance = await tonWallet.getContractBalance();
         console.log(`after deposit.  contractBalance:${contractBalance}`);
+
+        // withdraw
+        const withdraw_amount = toNano('0.2');
+        const txWithdrawRsp = await tonWallet.sendWithdraw(sender, withdraw_amount);
+        expect(txWithdrawRsp.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: tonWallet.address,
+            success: true,
+        });
+
+        //query balance
+        contractBalance = await tonWallet.getContractBalance();
+        console.log(`after withdraw.  contractBalance:${contractBalance}`);
     });
 });

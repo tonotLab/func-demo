@@ -10,7 +10,7 @@
 ## How to use
 
 ### Build
- `yarn blueprint build JettonMinter`
+ `yarn blueprint build TonWallet`
  `yarn blueprint build JettonWallet`
 
 ### Test
@@ -19,19 +19,24 @@
 
 ### Deploy
 
-`npx blueprint run jetton.deploy --testnet --mnemonic`
+`npx blueprint run wallet.deploy --testnet --mnemonic`
 
 
-### Mint token
+### Deposit
 
-`npx blueprint run jetton.mint --testnet  --mnemonic`
+`npx blueprint run wallet.deposit --testnet  --mnemonic`
 
 
-### Transfer token
+### Withdraw ton
 
-`npx blueprint run jetton.transfer --testnet  --mnemonic`
+`npx blueprint run wallet.withdraw --testnet  --mnemonic`
 
 
 ### Query token
 
-`npx blueprint run jetton.query --testnet  --mnemonic`
+`npx blueprint run wallet.query --testnet  --mnemonic`
+
+
+
+## Reference connection
+* IDO： `https://verifier.ton.org/EQAK30gSv6-eU9jkx5LL7yEYS2LcKfWssxC2dPComW1AR4IU`
