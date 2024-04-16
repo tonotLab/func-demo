@@ -49,7 +49,7 @@
           .store_uint(0x10, 6) ;; we should not bounce here cause receiver can have uninitialized contract
           .store_slice(sender_address)
           .store_coins(withdraw_amount)
-          .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1);
+          .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1); ;; or .store_uint(0,107);
 
         send_raw_message(msg.end_cell(), 1);
         return ();
